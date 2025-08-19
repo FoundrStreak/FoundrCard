@@ -191,7 +191,7 @@ REST_AUTH = {
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': 'jwt-auth',
     'JWT_AUTH_REFRESH_COOKIE': 'jwt-refresh-token',
-    'REGISTER_SERIALIZER': 'apps.user.serializers.CustomRegisterSerializer',
+    'REGISTER_SERIALIZER': 'apps.users.serializers.CustomRegisterSerializer',
 }
 
 REST_USE_JWT = True
