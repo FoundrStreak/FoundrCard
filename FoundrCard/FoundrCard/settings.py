@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     # ─── Admin UI Enhancement ─────────────
     'jazzmin',
 
+
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -56,10 +57,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     # ─── Project Apps ────────────────────
-    'apps.auth',
+    'apps.users.apps.UsersConfig',
+    'apps.card.apps.CardConfig',
 ]
 
 MIDDLEWARE = [
+    "allauth.account.middleware.AccountMiddleware",
     'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -155,7 +158,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Auth & Allauth
 # ────────────────────────────
 
-AUTH_USER_MODEL = 'user.CustomUser'  # TODO
+AUTH_USER_MODEL = 'users.CustomUser'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',

@@ -20,6 +20,11 @@ const routeConfig = {
     component: lazy(() => import("@/pages/auth/Register")),
   },
 
+  onboarding: {
+    path: "/onboarding",
+    component: lazy(() => import("@/pages/auth/Onboarding")),
+  },
+
   logout: {
     path: "/logout",
     component: lazy(() => import("@/pages/auth/Logout")),

@@ -20,11 +20,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-from apps.auth.serializers import (
+from .serializers import (
     UserPublicProfileSerializer,
     UserSerializer,
 )
-from apps.auth.utils import get_or_create_user, get_tokens_for_user, get_user_info_from_id_token
+from .utils import get_or_create_user, get_tokens_for_user, get_user_info_from_id_token
 
 # Initialize logger for this module
 logger = logging.getLogger(__name__)

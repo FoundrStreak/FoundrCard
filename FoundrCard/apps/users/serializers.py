@@ -12,7 +12,7 @@ from django.utils import timezone
 from rest_framework import serializers
 from dj_rest_auth.serializers import UserDetailsSerializer as BaseUserDetailsSerializer
 from dj_rest_auth.registration.serializers import RegisterSerializer as BaseRegisterSerializer
-from apps.auth.models import (
+from .models import (
     CustomUser as User
 )
 

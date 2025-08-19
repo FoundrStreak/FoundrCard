@@ -4,7 +4,6 @@ from .views import (
     CheckEmailView,
     DeleteAccountView,
     UserDetailView,
-    UserListView,
     UserProfileView,
     UsernameCheckView,
 )
@@ -16,9 +15,6 @@ urlpatterns = [
     # DELETE - api/user/delete/
     path("delete/", DeleteAccountView.as_view(), name="user_delete_account"),
 
-    # User Listings & Details
-    # GET - api/user/list/
-    path("list/", UserListView.as_view(), name="user_list"),
     # GET, PATCH - api/user/<str:username>/
     path("<str:username>/", UserDetailView.as_view(), name="user_detail"),
 

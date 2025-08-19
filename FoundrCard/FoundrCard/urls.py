@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import (
     TokenBlacklistView,
 )
 from .views import homeView
-from apps.auth.views import GoogleAuthAPIView
+from apps.users.views import GoogleAuthAPIView
 
 urlpatterns = [
 
@@ -64,6 +64,6 @@ urlpatterns = [
     # ────────────────────────────────────────────
     # Application APIs
     # ────────────────────────────────────────────
-    path("api/user/", include("apps.auth.urls")),
+    path("api/user/", include("apps.users.urls")),
 
 ]

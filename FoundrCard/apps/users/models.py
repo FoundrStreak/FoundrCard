@@ -6,6 +6,9 @@ from django.contrib.auth.models import (
     Group,
     Permission,
 )
+import random
+import string
+from django.utils import timezone
 
 # Create your models here.
 
@@ -23,7 +26,7 @@ def profile_picture_upload_to(instance: 'CustomUser', filename: str) -> str:
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email: str, password: str = None, **extra_fields: Any) -> 'CustomUser':
+    def create_user(self, email: str, password: str = None, **extra_fields: any) -> 'CustomUser':
         if not email:
             raise ValueError("Email address is required.")
         email = self.normalize_email(email)
@@ -32,7 +35,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email: str, password: str = None, **extra_fields: Any) -> 'CustomUser':
+    def create_superuser(self, email: str, password: str = None, **extra_fields: any) -> 'CustomUser':
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
@@ -94,19 +97,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         related_name='custom_users',
         related_query_name='custom_user',
         blank=True,
-        help_text=_("Groups this user belongs to."),
+        help_text=("Groups this user belongs to."),
     )
     user_permissions = models.ManyToManyField(
         Permission,
         related_name='custom_user_permissions',
         related_query_name='custom_user',
         blank=True,
-        help_text=_("Specific permissions for this user."),
+        help_text=("Specific permissions for this user."),
     )
 
     class Meta:
-        verbose_name = _("user")
-        verbose_name_plural = _("users")
+        verbose_name = "user"
+        verbose_name_plural = "users"
         ordering = ['-date_joined']
         indexes = [
             models.Index(fields=['email']),
