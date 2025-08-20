@@ -28,7 +28,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const redirectTo = searchParams.get("redirect") || "/feed";
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",

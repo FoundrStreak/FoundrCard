@@ -8,6 +8,7 @@
 
 import logging
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.utils import timezone
 from rest_framework import serializers
 from dj_rest_auth.serializers import UserDetailsSerializer as BaseUserDetailsSerializer
@@ -103,6 +104,17 @@ class UserSerializer(BaseUserDetailsSerializer):
         try:
             user = super().update(instance, validated_data)
             return user
+
+        except IntegrityError as e:
+            if 'username' in str(e):
+                raise ValidationError({
+                    'username': 'This username is already taken. Please choose a different one.'
+                })
+            logger.error(
+                f"Database error during user update for {instance.id}: {e}")
+            raise ValidationError(
+                "A database error occurred while updating your profile.")
         except Exception as e:
             logger.error(f"User update failed for {instance.id}: {e}")
-            raise ValidationError("Failed to update profile.")
+            raise ValidationError(
+                "An unexpected error occurred while updating your profile.")

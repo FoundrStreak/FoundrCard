@@ -41,11 +41,11 @@ class UserAdmin(BaseUserAdmin):
         ('Personal Info', {
             'fields': (
                 'username', 'first_name', 'last_name',
-                'profile_picture', 'bio', 'timezone', 'startup_url'
+                'profile_picture',
             )
         }),
         ('Status & Premium', {
-            'fields': ('status', 'is_premium', 'premium_expiry', 'google_id')
+            'fields': ('is_premium', 'premium_expiry', 'google_id')
         }),
         ('Permissions', {
             'fields': (
@@ -55,7 +55,7 @@ class UserAdmin(BaseUserAdmin):
         }),
         ('Activity Stats', {
             'classes': ('collapse',),
-            'fields': ('point_display', 'date_joined', 'last_login'),
+            'fields': ('date_joined', 'last_login'),
         }),
     )
 

@@ -6,6 +6,25 @@ export interface User {
   username: string;
   first_name: string;
   last_name: string;
+  profile_picture: string | null;
+  profile_picture_url: string | null;
+  is_premium: boolean;
+  premium_expiry: string;
+  google_id: string | null;
+  date_joined: string;
+  last_login: string;
+  has_active_premium: boolean;
+}
+
+export interface UserProfile {
+  email: string;
+  first_name: string;
+  last_name: string;
+  username: string;
+  profile_picture_url: string | null;
+  is_premium: boolean;
+  has_active_premium: boolean;
+  date_joined?: string;
 }
 
 // Zod validation schema for LoginSchema
@@ -66,4 +85,3 @@ export interface RegisterResponse {
 export type LogoutResponse = {
   detail: string;
 };
-

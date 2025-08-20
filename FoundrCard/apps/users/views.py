@@ -318,6 +318,7 @@ class CheckEmailView(APIView):
     """
 
     permission_classes = [AllowAny]
+    authentication_classes = [None]
     throttle_scope = 'email_check'
 
     def get(self, request, *args, **kwargs) -> Response:
@@ -374,8 +375,7 @@ class UsernameCheckView(APIView):
     It does not provide suggestions.
     """
 
-    permission_classes = [IsAuthenticated]
-    throttle_scope = 'username_check'
+    permission_classes = []
 
     def get(self, request, *args, **kwargs) -> Response:
         """
@@ -416,14 +416,14 @@ class UsernameCheckView(APIView):
             )
 
         try:
-            is_available: bool = not User.objects.filter(
+            is_available: bool = User.objects.filter(
                 username__iexact=username
-            ).exclude(pk=request.user.pk).exists()
+            ).exists()
 
             response_data: Dict[str, Any] = {
-                'available': is_available,
-                'message': 'Username is available.'
-                if is_available
+                'available': not is_available,
+                'message': ''
+                if not is_available
                 else 'Username is already taken.',
             }
 

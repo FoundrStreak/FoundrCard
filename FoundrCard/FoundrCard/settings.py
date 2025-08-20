@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import datetime
 from pathlib import Path
 from datetime import timedelta
 from corsheaders.defaults import default_headers, default_methods
@@ -211,7 +212,7 @@ TOKEN_MODEL = None
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+    "http://localhost:3000",
     # TODO
 ]
 
@@ -275,3 +276,72 @@ DEFAULT_FROM_EMAIL = ''  # TODO
 FRONTEND_URL = (
     "http://localhost:5173" if DEBUG else ""  # TODO
 )
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "FoundrCard Admin",
+    "site_header": "FoundrCard Administration",
+    "site_brand": "FoundrCard",
+    "welcome_sign": "Welcome to the FoundrCard Admin Panel",
+    "copyright": f"FoundrCard © {datetime.date.today().year}",
+
+    # Enable search from User
+    "search_model": ["user.CustomUser"],
+
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "related_modal_active": False,
+    "custom_css": None,
+    "custom_js": None,
+    "show_ui_builder": True,
+    "show_jazzmin": True,
+
+    # App ordering in sidebar
+    "order_with_respect_to": ["users", "card", ],
+
+
+    # Use correct icon naming and map actual model class names
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "user": "fas fa-user",
+        "user.CustomUser": "fas fa-user-circle",
+
+        # TODO: ADD MODEL
+        "payments": "fas fa-credit-card",
+        "payments.Payment": "fas fa-credit-card",
+        "payments.Subscription": "fas fa-receipt",
+        "payments.Subscriber": "fas fa-user-check",
+    }
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": True,
+    "brand_small_text": False,
+    "brand_colour": False,
+    "accent": "accent-primary",
+    "navbar": "navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": False,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "darkly",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success"
+    }
+}

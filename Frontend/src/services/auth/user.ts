@@ -7,7 +7,8 @@ export const checkUsername = async (username: string) => {
       username,
     },
   });
-  return data.message;
+  console.log(data);
+  return data;
 };
 
 export const checkEmail = async (email: string) => {

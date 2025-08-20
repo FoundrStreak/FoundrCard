@@ -1,4 +1,3 @@
-// src/pages/auth/Onboarding.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,6 +19,7 @@ import {
   generateRandomUsername,
   validateUsernameFormat,
 } from "@/utils/username";
+import { updateUsernameData } from "@/services/auth/onboarding";
 import Confetti from "react-confetti";
 import { useWindowSize } from "react-use";
 
@@ -42,10 +42,10 @@ const OnboardingUsername: React.FC = () => {
 
     setIsChecking(true);
     try {
-      const { available } = await checkUsername(username);
-      setIsAvailable(available);
-      if (!available) {
-        setError("Username is already taken");
+      const isAvailableData = await checkUsername(username);
+      setIsAvailable(isAvailableData.available);
+      if (!isAvailable) {
+        setError(isAvailableData.message);
       } else {
         setError("");
       }
@@ -53,6 +53,7 @@ const OnboardingUsername: React.FC = () => {
       setError("Failed to check username availability");
     } finally {
       setIsChecking(false);
+      setIsLoading(false);
     }
   };
 
@@ -74,9 +75,13 @@ const OnboardingUsername: React.FC = () => {
       // TODO: Call your API to save the username
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setShowConfetti(true);
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 2000);
+      setTimeout(async () => {
+        const response = await updateUsernameData(username);
+        console.log(response);
+        response
+          ? navigate("/profile")
+          : setError("Unexpected Error Occurred");
+      }, 5000);
     } catch (err) {
       setError("Failed to save username");
     } finally {

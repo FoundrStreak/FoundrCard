@@ -70,9 +70,9 @@ const Register = () => {
       setIsLoading(true);
       await registerUser(formData);
       toast.success("Registration successful!", {
-        description: "Welcome! You can now log in to your account.",
+        description: "Welcome! Setup your Accounts.",
       });
-      setTimeout(() => navigate("/login"), 500);
+      setTimeout(() => navigate("/onboarding"), 500);
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
