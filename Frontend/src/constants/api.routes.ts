@@ -9,3 +9,7 @@ export const CHECK_USERNAME_URL = "user/check-username";
 export const CHECK_EMAIL_URL = "user/check-email";
 export const USER_PROFILE_URL = "user/me/";
 export const USER_DELETE_ACCOUNT_URL = "user/delete/";
+
+
+// CARD ROUTE
+export const CARD_URL = "card/slug";

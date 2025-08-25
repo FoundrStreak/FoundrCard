@@ -9,6 +9,7 @@ from django.contrib.auth.models import (
 import random
 import string
 from django.utils import timezone
+from apps.payments.models import SubscriptionTier
 
 # Create your models here.
 
@@ -76,6 +77,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         default=False, help_text="Active premium subscription.")
     premium_expiry = models.DateTimeField(
         blank=True, null=True, help_text="Premium subscription end date.")
+    subscription_tier = models.ForeignKey(
+        SubscriptionTier, on_delete=models.PROTECT, null=True)
+    stripe_customer_id = models.CharField(max_length=100, blank=True)
     google_id = models.CharField(
         max_length=128, unique=True, blank=True, null=True, help_text="Google OAuth ID.")
     email_notifications = models.BooleanField(

@@ -65,5 +65,6 @@ urlpatterns = [
     # Application APIs
     # ────────────────────────────────────────────
     path("api/user/", include("apps.users.urls")),
+    path("api/card/", include("apps.cards.urls")),
 
 ]

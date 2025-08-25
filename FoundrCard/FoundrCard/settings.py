@@ -59,7 +59,9 @@ INSTALLED_APPS = [
 
     # ─── Project Apps ────────────────────
     'apps.users.apps.UsersConfig',
-    'apps.card.apps.CardConfig',
+    'apps.cards.apps.CardsConfig',
+    'apps.payments.apps.PaymentsConfig',
+
 ]
 
 MIDDLEWARE = [
