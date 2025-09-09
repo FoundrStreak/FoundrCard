@@ -170,6 +170,13 @@ AUTHENTICATION_BACKENDS = (
 
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+
+ACCOUNT_SIGNUP_FIELDS = {
+    "username": {"required": False},
+    "email": {"required": True},
+    "password": {"required": True},
+}
 
 # ────────────────────────────
 #  REST Framework & JWT

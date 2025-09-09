@@ -79,14 +79,14 @@ class UserSerializer(BaseUserDetailsSerializer):
         model = User
         fields = tuple(BaseUserDetailsSerializer.Meta.fields) + (
             'username', 'profile_picture', "profile_picture_url",
-            'is_premium', 'premium_expiry', 'google_id',
-            'date_joined', 'last_login',
+            'is_premium', 'premium_expiry', 'google_id', 'stripe_customer_id',
+            'subscription_tier', 'date_joined', 'last_login',
 
         )
         read_only_fields = (
             'email', 'is_active', 'is_staff',
-            'is_premium', 'premium_expiry', 'google_id',
-            'date_joined', 'last_login',
+            'is_premium', 'premium_expiry', 'google_id', 'subscription_user',
+            'date_joined', 'last_login', 'stripe_customer_id'
 
         )
 

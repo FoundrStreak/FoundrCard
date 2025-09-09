@@ -35,6 +35,11 @@ const routeConfig = {
     component: lazy(() => import("@/pages/Card")),
   },
 
+  createCard: {
+    path: "/create-card",
+    component: lazy(() => import("@/pages/CreateCard")),
+  },
+
   logout: {
     path: "/logout",
     component: lazy(() => import("@/pages/auth/Logout")),

@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Card, Link, LinkType, CardTemplate
+from .models import Card, Link, LinkType
+from apps.users.serializers import UserPublicProfileSerializer
 
 
 class LinkTypeSerializer(serializers.ModelSerializer):
@@ -21,11 +22,8 @@ class LinkSerializer(serializers.ModelSerializer):
 class CardSerializer(serializers.ModelSerializer):
     links = LinkSerializer(many=True, read_only=True)
     template = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    profile = UserPublicProfileSerializer(read_only=True)
 
     class Meta:
         model = Card
-        fields = [
-            "id", "slug", "title", "subtitle", "bio",
-            "avatar_type", "avatar_value", "primary_color", "secondary_color",
-            "background_style", "template", "links"
-        ]
+        fields = '__all__'

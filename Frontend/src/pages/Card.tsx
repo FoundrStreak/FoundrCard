@@ -1,117 +1,79 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Instagram, Twitter, Linkedin, Mail } from "lucide-react";
 import { motion } from "framer-motion";
-import { Instagram, Twitter, Linkedin, Mail } from "lucide-react";
 import fetchCardData from "@/services/pages/card";
-// 1. Import the background image
-import backgroundImage from '@/assets/image.png'; 
+
+const isDarkColor = (hexColor) => {
+  if (!hexColor) return false;
+  const c = hexColor.substring(1);
+  const rgb = parseInt(c, 16);
+  const r = (rgb >> 16) & 0xff;
+  const g = (rgb >> 8) & 0xff;
+  const b = (rgb >> 0) & 0xff;
+  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return luma < 128;
+};
+
+const getContrastingTextColor = (bgColor) => {
+  return isDarkColor(bgColor) ? "#ffffff" : "#2d3748";
+};
+
+const getTextColor = (bgColor) => {
+  return isDarkColor(bgColor) ? "#ffffff" : "#2d3748";
+};
 
 type Link = {
   id: number;
   title: string;
   url: string;
-  description: string;
-  is_featured: boolean;
-  order: number;
+  description?: string;
   custom_icon?: string;
   custom_color?: string;
+  is_featured: boolean;
+  order: number;
 };
 
 type Profile = {
   id: string;
+  profile: {
+    profile_picture: string | null;
+    profile_picture_url: string | null;
+  };
   slug: string;
   title: string;
-  subtitle: string;
-  bio: string;
-  avatar_type: string;
+  subtitle?: string;
+  bio?: string;
+  startup_link?: string;
+  instagram_url?: string;
+  twitter_url?: string;
+  linkedin_url?: string;
+  email?: string;
+  avatar_type: "initials" | "image";
   avatar_value: string;
   primary_color: string;
   secondary_color: string;
-  background_style: string;
+  background_style: "solid" | "gradient";
   links: Link[];
-  social_links: {
-    instagram?: string;
-    twitter?: string;
-    linkedin?: string;
-    email?: string;
-  };
 };
 
-function getContrastColor(hex: string): string {
-  if (!hex) return "#fff";
-  let c = hex.substring(1);
-  if (c.length === 3) c = c.split("").map((x) => x + x).join("");
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.5 ? "#000" : "#fff";
-}
-
-// Mock API data to match the image
-const MOCK_API_DATA: Profile[] = [
-  {
-    "id": "mock-sarah-chen",
-    "slug": "sarah-chen",
-    "title": "Sarah Chen",
-    "subtitle": "Serial Entrepreneur & Foundr",
-    "bio": "Building the future of work. 3x foundr, 2 exits. Investing in early-stage startups.",
-    "avatar_type": "initials",
-    "avatar_value": "SC",
-    "primary_color": "#8B5CF6", // A purple tone
-    "secondary_color": "#D946EF", // A pink tone
-    "background_style": "gradient",
-    "template": null,
-    "links": [
-      {
-        "id": 1,
-        "title": "My Latest Startup",
-        "url": "#",
-        "description": "AI-powered productivity platform",
-        "custom_icon": "⚡",
-        "custom_color": "#8B5CF6",
-        "is_featured": true,
-        "order": 0,
-        "link_type": null
-      },
-      {
-        "id": 2,
-        "title": "Foundr's Journey Blog",
-        "url": "#",
-        "description": "Lessons from building 3 companies",
-        "custom_icon": "📈",
-        "custom_color": "#3B82F6",
-        "is_featured": false,
-        "order": 1,
-        "link_type": null
-      }
-    ],
-    "social_links": {
-      "instagram": "https://instagram.com/sarahchen",
-      "twitter": "https://twitter.com/sarahchen",
-      "linkedin": "https://linkedin.com/in/sarahchen",
-      "email": "mailto:sarahchen@example.com"
-    }
-  }
-];
-
-export default function FounderProfileCard() {
-  const [profile, setProfile] = useState<Profile | null>(null);
+export default function LinkCard() {
+  const [card, setCard] = useState<Profile | null>(null);
 
   useEffect(() => {
-    async function fetchProfile() {
+    const loadCard = async () => {
       try {
-        setProfile(MOCK_API_DATA[0]);
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
+        const data: Profile[] = await fetchCardData();
+        setCard(data[0]);
+      } catch (err) {
+        console.error("Error fetching card:", err);
       }
-    }
-    fetchProfile();
+    };
+    loadCard();
   }, []);
 
-  if (!profile) {
+  if (!card) {
     return (
       <div className="flex h-screen items-center justify-center text-gray-500">
         Loading...
@@ -119,125 +81,280 @@ export default function FounderProfileCard() {
     );
   }
 
-  const socialIcons = [
-    { name: "Instagram", icon: Instagram, url: profile.social_links?.instagram },
-    { name: "Twitter", icon: Twitter, url: profile.social_links?.twitter },
-    { name: "LinkedIn", icon: Linkedin, url: profile.social_links?.linkedin },
-    { name: "Email", icon: Mail, url: profile.social_links?.email },
+  const socialLinks = [
+    { icon: Instagram, url: card.instagram_url },
+    { icon: Twitter, url: card.twitter_url },
+    { icon: Linkedin, url: card.linkedin_url },
+    { icon: Mail, url: card.email ? `mailto:${card.email}` : null },
   ];
 
+  const featuredLinks = [
+    ...(card.startup_link
+      ? [
+          {
+            id: -1,
+            title: "My Latest Startup",
+            url: card.startup_link,
+            description: "AI-powered productivity platform",
+            is_featured: true,
+            custom_color: "#e0e7ff",
+            custom_icon: "⚡",
+            order: -1,
+          },
+        ]
+      : []),
+    ...card.links.filter((link) => link.is_featured),
+  ].sort((a, b) => a.order - b.order);
+
   return (
-    <div className="relative w-full min-h-screen flex items-center justify-center overflow-hidden font-sans text-white">
-      {/* 2. Optimized Background Image */}
-      <div
-        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      />
-      {/* 3. Dark overlay to ensure UI elements are readable */}
-      <div className="absolute inset-0 z-0 bg-black opacity-60" />
-
-      {/* Profile Card Container */}
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative flex w-full max-w-sm flex-col items-center space-y-8 z-10 px-4 py-12 rounded-2xl shadow-2xl bg-gray-950/70 backdrop-blur-md border border-gray-800"
+        transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        {/* Avatar */}
-        <div
-          className="flex h-24 w-24 items-center justify-center rounded-full text-3xl font-bold shadow-lg ring-4 ring-gray-700"
-          style={{
-            background:
-              profile.background_style === "solid"
-                ? profile.primary_color
-                : `linear-gradient(to bottom right, ${profile.primary_color}, ${profile.secondary_color})`,
-            color: getContrastColor(profile.primary_color),
-          }}
-        >
-          {profile.avatar_type === "initials" ? (
-            profile.avatar_value
-          ) : (
-            <Avatar>
-              <img src={profile.avatar_value} alt={profile.title} />
-              <AvatarFallback>{profile.title.charAt(0)}</AvatarFallback>
-            </Avatar>
-          )}
-        </div>
-
-        {/* Name + Bio */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-extrabold text-white">
-            {profile.title}
-          </h1>
-          {profile.subtitle && (
-            <p className="text-gray-400 font-medium">{profile.subtitle}</p>
-          )}
-          {profile.bio && (
-            <p className="text-sm text-gray-400 max-w-xs">{profile.bio}</p>
-          )}
-        </div>
-
-        {/* Social Icons */}
-        <div className="flex justify-center space-x-6">
-          {socialIcons.map((social) =>
-            social.url ? (
-              <a
-                key={social.name}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
-              >
-                <social.icon size={20} />
-              </a>
-            ) : null
-          )}
-        </div>
-
-        {/* Links */}
-        <div className="w-full space-y-4">
-          {profile.links.map((link) => {
-            const bg = link.custom_color || profile.primary_color;
-            const textColor = getContrastColor(bg);
-            const iconBg = `linear-gradient(to bottom right, ${profile.primary_color}, ${profile.secondary_color})`;
-            const iconColor = "white";
-
-            return (
-              <Card
-                key={link.id}
-                className="cursor-pointer transition transform hover:scale-[1.02] shadow-xl hover:shadow-2xl"
-                onClick={() => window.open(link.url, "_blank")}
-                style={{
-                  background: "#1F2937",
-                  border: "1px solid #374151",
-                }}
-              >
-                <CardContent className="flex items-center space-x-4 p-4 text-white">
-                  <div
-                    className="flex h-12 w-12 items-center justify-center rounded-xl"
+        <Card className="shadow-lg rounded-[36px] overflow-hidden border border-gray-200">
+          <CardContent className="flex flex-col items-center p-8 space-y-6">
+            <motion.div
+              className="flex items-center justify-center w-28 h-28 rounded-[32px] shadow-md"
+              style={{
+                background:
+                  card.avatar_type === "initials"
+                    ? card.background_style === "gradient"
+                      ? `linear-gradient(to bottom right, ${card.primary_color}, ${card.secondary_color})`
+                      : card.primary_color
+                    : "transparent",
+                color: "#fff",
+              }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            >
+              {card.profile.profile_picture_url ? (
+                <Avatar className="w-full h-full rounded-[32px]">
+                  <img
+                    src={card.profile.profile_picture_url}
+                    alt={card.title}
+                    className="object-cover w-full h-full rounded-[32px]"
+                  />
+                  <AvatarFallback>{card.title.charAt(0)}</AvatarFallback>
+                </Avatar>
+              ) : (
+                <Avatar className="w-full h-full rounded-[32px] text-4xl font-bold">
+                  <AvatarFallback
                     style={{
-                      background: iconBg,
-                      color: iconColor,
+                      background:
+                        card.background_style === "gradient"
+                          ? `linear-gradient(to bottom right, ${card.primary_color}, ${card.secondary_color})`
+                          : card.primary_color,
+                      color: "#fff",
                     }}
                   >
-                    {link.custom_icon || "🔗"}
+                    {card.avatar_value}
+                  </AvatarFallback>
+                </Avatar>
+              )}
+            </motion.div>
+
+            <div className="text-center space-y-1">
+              <motion.h2
+                className="text-2xl font-semibold text-gray-800"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                {card.title}
+              </motion.h2>
+              {card.subtitle && (
+                <motion.p
+                  className="text-gray-500 text-sm font-medium"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  {card.subtitle}
+                </motion.p>
+              )}
+              {card.bio && (
+                <motion.p
+                  className="text-gray-500 text-sm max-w-xs"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  {card.bio}
+                </motion.p>
+              )}
+            </div>
+
+            <motion.div
+              className="flex space-x-3 mt-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              {socialLinks.map(
+                (social, i) =>
+                  social.url && (
+                    <motion.a
+                      key={i}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-12 h-12 rounded-full border border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+                      whileHover={{ scale: 1.1, y: -3 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <social.icon size={20} />
+                    </motion.a>
+                  )
+              )}
+            </motion.div>
+
+            <motion.div
+              className="w-full flex flex-col gap-3 mt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+            >
+              {featuredLinks.map((link, index) => (
+                <motion.a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 p-4 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200"
+                  style={{
+                    backgroundColor: link.custom_color || "#f3f4f6",
+                    color: getContrastingTextColor(
+                      link.custom_color || "#f3f4f6"
+                    ),
+                  }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9 + index * 0.1, duration: 0.3 }}
+                  whileHover={{ scale: 1.02, x: 5 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div
+                    className="w-12 h-12 flex items-center justify-center rounded-xl text-white text-2xl"
+                    style={{
+                      background:
+                        card.background_style === "gradient"
+                          ? `linear-gradient(to bottom right, ${card.primary_color}, ${card.secondary_color})`
+                          : card.primary_color,
+                    }}
+                  >
+                    {link.custom_icon === "⚡" ? (
+                      <span role="img" aria-label="lightning">
+                        ⚡
+                      </span>
+                    ) : link.custom_icon ? (
+                      <img
+                        src={link.custom_icon}
+                        alt="icon"
+                        className="w-8 h-8"
+                      />
+                    ) : (
+                      "🔗"
+                    )}
                   </div>
-                  <div className="flex flex-col flex-grow">
-                    <span className="font-semibold text-white">
-                      {link.title || "Untitled Link"}
+                  <div className="flex flex-col flex-1">
+                    <span
+                      className="font-semibold text-gray-800"
+                      style={{
+                        color: getContrastingTextColor(
+                          link.custom_color || "#f3f4f6"
+                        ),
+                      }}
+                    >
+                      {link.title}
                     </span>
                     {link.description && (
-                      <span className="text-sm text-gray-400">
+                      <span
+                        className="text-sm font-light"
+                        style={{
+                          color: getContrastingTextColor(
+                            link.custom_color || "#f3f4f6"
+                          ),
+                          opacity: 0.7,
+                        }}
+                      >
                         {link.description}
                       </span>
                     )}
                   </div>
-                  <ExternalLink className="ml-auto h-5 w-5 text-gray-400" />
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                  <ExternalLink
+                    size={18}
+                    className="text-gray-500"
+                    style={{
+                      color: getContrastingTextColor(
+                        link.custom_color || "#f3f4f6"
+                      ),
+                      opacity: 0.6,
+                    }}
+                  />
+                </motion.a>
+              ))}
+
+              {card.links
+                .filter((link) => !link.is_featured)
+                .map((link, index) => (
+                  <motion.a
+                    key={link.id}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-4 p-4 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 bg-white"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.9 + (featuredLinks.length + index) * 0.1,
+                      duration: 0.3,
+                    }}
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div
+                      className="w-12 h-12 flex items-center justify-center rounded-xl text-white text-xl"
+                      style={{
+                        background:
+                          link.custom_color ||
+                          `linear-gradient(to bottom right, ${card.primary_color}, ${card.secondary_color})`,
+                        color: "#fff",
+                      }}
+                    >
+                      {link.custom_icon === "⚡" ? (
+                        <span role="img" aria-label="lightning">
+                          ⚡
+                        </span>
+                      ) : link.custom_icon ? (
+                        <img
+                          src={link.custom_icon}
+                          alt="icon"
+                          className="w-8 h-8"
+                        />
+                      ) : (
+                        "🔗"
+                      )}
+                    </div>
+                    <div className="flex flex-col flex-1">
+                      <span className="font-semibold text-gray-800">
+                        {link.title}
+                      </span>
+                      {link.description && (
+                        <span className="text-gray-500 text-sm font-light">
+                          {link.description}
+                        </span>
+                      )}
+                    </div>
+                    <ExternalLink size={18} className="text-gray-500" />
+                  </motion.a>
+                ))}
+            </motion.div>
+          </CardContent>
+        </Card>
       </motion.div>
     </div>
   );
